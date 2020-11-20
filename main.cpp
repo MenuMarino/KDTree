@@ -67,6 +67,10 @@ public:
         return find_min_x_aux(m_pRoot, true, m_pRoot);
     }
 
+    Nodo<T>* find_min_y() {
+        return find_min_y_aux(m_pRoot, true, m_pRoot);
+    }
+
     Nodo<T>* find_min_x_aux(Nodo<T>* p, bool d, Nodo<T>* parent) {
         if (p) {
             if (d) {
@@ -90,6 +94,29 @@ public:
         return nullptr;
     }
 
+    Nodo<T>* find_min_y_aux(Nodo<T>* p, bool d, Nodo<T>* parent) {
+        if (p) {
+            if (!d) {
+                auto izq = find_min_y_aux(p->m_pSon[0], !d, p);
+                if (!izq) return p;
+                return (izq->coord.second < p->coord.second) ? izq : p;
+            } else {
+                auto izq = find_min_y_aux(p->m_pSon[0], !d, p);
+                auto der = find_min_y_aux(p->m_pSon[1], !d, p);
+                if (!izq && !der) return p;
+                if (!izq) {
+                    return (der->coord.second < p->coord.second) ? der : p;
+                }
+                if (!der) {
+                    return (izq->coord.second < p->coord.second) ? izq : p;
+                }
+                auto hijo = (izq->coord.second < der->coord.second) ? izq : der;
+                return (hijo->coord.second < p->coord.second) ? hijo : p;
+            }
+        }
+        return nullptr;
+    }
+
 };
 
 
@@ -101,11 +128,11 @@ int main() {
     A.insert('E', 10, 2);
     A.insert('G', 2, 2);
     A.insert('B', 4, 7);
-    A.insert('I', 9, 2);
+    A.insert('I', 9, -2);
     A.insert('U', 0, 8);
     A.insert('O', -1, 8);
     A.print();
-    auto r = A.find_min_x();
+    auto r = A.find_min_y();
 
     cout << r->dato << endl;
 
