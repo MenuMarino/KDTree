@@ -1,4 +1,4 @@
-#include<iostream>
+#include<bits/stdc++.h>
 
 using namespace std;
 
@@ -40,13 +40,13 @@ public:
         return m_pRoot;
     }
 
-    void insert(T D, T x, T y) {
+    void insert(T D, int x, int y) {
         insert(D, m_pRoot, true, {x, y});
     }
 
     void insert(T D, Nodo<T> * & p, bool d, pair<int, int> coord){
         if(!p) {
-            p=new Nodo<T>(coord,D, d);
+            p=new Nodo<T>(coord, D, d);
             return;
         }
         if (p->coord == coord) return;
@@ -117,24 +117,39 @@ public:
         return nullptr;
     }
 
+    ~KdTree() {
+        if (m_pRoot) destroy(m_pRoot);
+    }
+
+    void destroy(Nodo<T>* p) {
+        if (p) {
+            destroy(p->m_pSon[0]);
+            destroy(p->m_pSon[1]);
+            // cout << "Deleting " << p->dato << '\n';
+            delete p;
+        }
+    }
+
 };
 
 
 int main() {
     KdTree<char>  A;
-    A.insert('F', 1, 2);
-    A.insert('C', 3, 4);
-    A.insert('A', 8, 20);
-    A.insert('E', 10, 2);
-    A.insert('G', 2, 2);
-    A.insert('B', 4, 7);
-    A.insert('I', 9, -2);
-    A.insert('U', 0, 8);
-    A.insert('O', -1, 8);
-    A.print();
-    auto r = A.find_min_y();
-
-    cout << r->dato << endl;
+    int min_x = INT_MAX, min_y = INT_MAX;
+    srand(time(nullptr));
+    for (int i = 0; i < 1000; ++i) {
+        int x = rand()%20000;
+        int y = rand()%20000;
+        min_x = min(min_x, x);
+        min_y = min(min_y, y);
+        A.insert( (char)(i%255), x, y);
+    }
+    
+    auto nodo_x = A.find_min_x();
+    auto nodo_y = A.find_min_y();
+    
+    assert(nodo_x->coord.first == min_x);
+    assert(nodo_y->coord.second == min_y);
 
     return 0;
 }
